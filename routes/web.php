@@ -1,0 +1,39 @@
+<?php
+
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\SavedCardController;
+use App\Http\Controllers\StorefrontController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', [StorefrontController::class, 'home'])->name('home');
+Route::get('/products', [StorefrontController::class, 'products'])->name('products.index');
+Route::get('/products/{product}', [StorefrontController::class, 'show'])->name('products.show');
+
+Route::middleware('guest')->group(function () {
+    Route::get('/sign-up', [RegisteredUserController::class, 'create'])->name('register');
+    Route::post('/sign-up', [RegisteredUserController::class, 'store'])->name('register.store');
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
+});
+
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
+
+Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/account', [AccountController::class, 'show'])->name('account.show');
+    Route::patch('/account', [AccountController::class, 'update'])->name('account.update');
+    Route::post('/account/cards', [SavedCardController::class, 'store'])->name('account.cards.store');
+    Route::patch('/account/cards/{savedCard}', [SavedCardController::class, 'update'])->name('account.cards.update');
+    Route::delete('/account/cards/{savedCard}', [SavedCardController::class, 'destroy'])->name('account.cards.destroy');
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+});
