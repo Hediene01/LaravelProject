@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,6 +19,11 @@ class AccountAuthTest extends TestCase
 
     public function test_user_can_register_and_is_logged_in(): void
     {
+        Role::query()->create([
+            'name' => 'user',
+            'description' => 'Standard customer role',
+        ]);
+
         $response = $this->post(route('register.store'), [
             'name' => 'Grace Hopper',
             'email' => 'grace@example.com',
@@ -31,6 +37,10 @@ class AccountAuthTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'grace@example.com',
             'name' => 'Grace Hopper',
+        ]);
+        $this->assertDatabaseHas('role_user', [
+            'user_id' => User::query()->where('email', 'grace@example.com')->firstOrFail()->id,
+            'role_id' => Role::query()->where('name', 'user')->firstOrFail()->id,
         ]);
     }
 

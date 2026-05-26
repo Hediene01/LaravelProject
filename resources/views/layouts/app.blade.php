@@ -25,6 +25,9 @@
                     <a href="{{ route('checkout.create') }}">Checkout</a>
                     @auth
                         <a href="{{ route('account.show') }}">My account</a>
+                        @if (auth()->user()->hasRole('admin'))
+                            <a href="{{ route('admin.dashboard') }}">Admin</a>
+                        @endif
                     @endauth
                 </nav>
 

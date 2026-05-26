@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -14,6 +15,8 @@ class StoreSeeder extends Seeder
      */
     public function run(): void
     {
+        $adminUser = User::query()->where('email', 'admin@example.com')->first();
+
         $categories = collect([
             [
                 'name' => 'Audio',
@@ -152,13 +155,18 @@ class StoreSeeder extends Seeder
                 ['sku' => $product['sku']],
                 [
                     'category_id' => $categories[$product['category']]->id,
+                    'user_id' => $adminUser?->id,
                     'name' => $product['name'],
+                    'keywords' => str_replace('-', ', ', Str::slug($product['name'])),
                     'slug' => Str::slug($product['name']),
                     'description' => $product['description'],
+                    'detail' => $product['description'].' Designed as seeded demo content for the admin CRUD and storefront pages.',
                     'price' => $product['price'],
                     'compare_price' => $product['compare_price'],
                     'image_url' => $product['image_url'],
                     'inventory' => $product['inventory'],
+                    'min_stock' => 5,
+                    'discount' => $product['compare_price'] ? (int) max(0, round((1 - ($product['price'] / $product['compare_price'])) * 100)) : 0,
                     'is_featured' => $product['is_featured'],
                     'is_active' => true,
                     'attributes' => $product['attributes'],

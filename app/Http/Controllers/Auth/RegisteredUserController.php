@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -25,6 +26,12 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::query()->create($validated);
+
+        $userRole = Role::query()->where('name', 'user')->first();
+
+        if ($userRole !== null) {
+            $user->roles()->syncWithoutDetaching([$userRole->id]);
+        }
 
         Auth::login($user);
         $request->session()->regenerate();

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -37,3 +39,23 @@ Route::middleware('auth')->group(function () {
     Route::delete('/account/cards/{savedCard}', [SavedCardController::class, 'destroy'])->name('account.cards.destroy');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
+
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth', 'role:admin'])
+    ->group(function () {
+        Route::get('/', DashboardController::class)->name('dashboard');
+
+        Route::prefix('product')
+            ->name('product.')
+            ->controller(AdminProductController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/create', 'create')->name('create');
+                Route::post('/store', 'store')->name('store');
+                Route::get('/show/{product}', 'show')->name('show');
+                Route::get('/edit/{product}', 'edit')->name('edit');
+                Route::put('/update/{product}', 'update')->name('update');
+                Route::delete('/delete/{product}', 'destroy')->name('destroy');
+            });
+    });

@@ -31,7 +31,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('account.show'))->with('success', 'Welcome back.');
+        $defaultRoute = Auth::user()->hasRole('admin')
+            ? route('admin.dashboard')
+            : route('account.show');
+
+        return redirect()->intended($defaultRoute)->with('success', 'Welcome back.');
     }
 
     public function destroy(Request $request): RedirectResponse

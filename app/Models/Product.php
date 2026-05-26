@@ -13,14 +13,19 @@ class Product extends Model
 
     protected $fillable = [
         'category_id',
+        'user_id',
         'name',
+        'keywords',
         'slug',
         'description',
+        'detail',
         'price',
         'compare_price',
         'sku',
         'image_url',
         'inventory',
+        'min_stock',
+        'discount',
         'is_featured',
         'is_active',
         'attributes',
@@ -45,6 +50,11 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function orderItems(): HasMany
