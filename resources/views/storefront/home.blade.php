@@ -34,15 +34,23 @@
         </div>
 
         <div class="hero-panel">
-            <div class="hero-panel-card">
-                <span class="eyebrow">Commerce toolkit</span>
-                <h2>What's included</h2>
-                <ul class="feature-list">
-                    <li>Catalog browsing with category, brand, and search filters</li>
-                    <li>Wishlist and customer review flows for signed-in users</li>
-                    <li>Session cart and checkout with stored orders</li>
-                    <li>Admin CRUD, moderation, and public JSON API endpoints</li>
-                </ul>
+            <div class="hero-showcase" aria-label="Featured product preview">
+                @foreach ($featuredProducts->take(3) as $product)
+                    <a
+                        class="hero-product hero-product-{{ $loop->iteration }}"
+                        href="{{ route('products.show', $product) }}"
+                    >
+                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}">
+                        <span>
+                            <strong>{{ $product->name }}</strong>
+                            <small>${{ number_format((float) $product->price, 2) }}</small>
+                        </span>
+                    </a>
+                @endforeach
+                <div class="hero-showcase-note">
+                    <span class="eyebrow">Curated tech</span>
+                    <strong>{{ $featuredProducts->count() }} featured launches</strong>
+                </div>
             </div>
         </div>
     </section>

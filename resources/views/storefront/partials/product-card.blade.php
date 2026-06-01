@@ -1,6 +1,9 @@
 <article class="product-card">
     <a class="product-image-link" href="{{ route('products.show', $product) }}">
         <img class="product-image" src="{{ $product->image_url }}" alt="{{ $product->name }}">
+        @if ($product->discount > 0)
+            <span class="image-badge">{{ $product->discount }}% off</span>
+        @endif
     </a>
 
     <div class="product-body">
