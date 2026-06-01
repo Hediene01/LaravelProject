@@ -7,7 +7,7 @@
         <div>
             <span class="eyebrow">User account</span>
             <h1>My account</h1>
-            <p>Manage your login details, personal information, and saved payment cards.</p>
+            <p>Manage your personal information, recent orders, wishlist activity, and saved payment cards.</p>
         </div>
     </section>
 
@@ -72,6 +72,41 @@
 
         <div class="account-section">
             <div class="account-panel">
+                <span class="eyebrow">Account activity</span>
+                <h2>Orders and saved products</h2>
+                <p class="account-note">Track your latest orders and return to saved items from your wishlist.</p>
+
+                <div class="summary-item">
+                    <div>
+                        <strong>Orders placed</strong>
+                        <span>{{ $user->orders->count() }} total orders</span>
+                    </div>
+                    <a class="text-link" href="{{ route('wishlist.index') }}">Open wishlist</a>
+                </div>
+
+                <div class="saved-card-list">
+                    @forelse ($user->orders->take(4) as $order)
+                        <article class="saved-card">
+                            <div>
+                                <div class="saved-card-top">
+                                    <strong>{{ $order->order_number }}</strong>
+                                    <span class="chip">{{ ucfirst($order->status) }}</span>
+                                </div>
+                                <p>{{ $order->created_at->format('M d, Y') }}</p>
+                                <span>${{ number_format((float) $order->total_amount, 2) }}</span>
+                            </div>
+                        </article>
+                    @empty
+                        <div class="empty-inline">
+                            No orders yet. Complete a checkout to build order history.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <div class="account-section">
+            <div class="account-panel">
                 <span class="eyebrow">Saved cards</span>
                 <h2>Payment cards</h2>
                 <p class="account-note">For safety, the app stores only masked card details, brand, expiry, and cardholder name.</p>
@@ -87,7 +122,7 @@
                                     @endif
                                 </div>
                                 <p>{{ $savedCard->cardholder_name }}</p>
-                                <span>•••• {{ $savedCard->last_four }} · {{ str_pad((string) $savedCard->expiry_month, 2, '0', STR_PAD_LEFT) }}/{{ $savedCard->expiry_year }}</span>
+                                <span>**** {{ $savedCard->last_four }} · {{ str_pad((string) $savedCard->expiry_month, 2, '0', STR_PAD_LEFT) }}/{{ $savedCard->expiry_year }}</span>
                             </div>
 
                             <div class="saved-card-actions">

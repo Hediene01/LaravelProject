@@ -1,17 +1,18 @@
 # Luna Commerce
 
-Luna Commerce is a Laravel ecommerce project with a public storefront, customer authentication, a protected admin panel, and a full product CRUD system.
+Luna Commerce is a Laravel ecommerce project with a public storefront, customer authentication, wishlist and reviews, a protected admin panel, and a public JSON API.
 
 ## Overview
 
-This project was extended to match the Laravel course requirements for:
+This project now includes:
 
-- product CRUD operations
-- multi-role user management
-- admin login protection
-- admin-only route access with middleware
+- multi-role user management with admin protection
+- storefront catalog with categories, brands, filters, and reviews
+- wishlist and customer account activity
+- admin CRUD for products, categories, brands, orders, and review moderation
+- public API endpoints for products, categories, and brands
 
-## Project Roadmap
+## Feature Roadmap Implemented
 
 ### 1. Role Management
 
@@ -30,68 +31,82 @@ This project was extended to match the Laravel course requirements for:
 - Added a custom `RoleMiddleware`
 - Protected admin routes with `auth` and `role:admin`
 
-### 3. Admin Dashboard
+### 3. Catalog Expansion
 
-- Added a protected admin panel at `/admin`
-- Added a dedicated admin layout
-- Displayed store statistics such as:
-  - total products
-  - total categories
-  - total orders
-  - total users
+- Added `brands`
+- Added category hierarchy support with `parent_id`
+- Added product SEO and gallery fields
+- Added review metrics:
+  - `average_rating`
+  - `reviews_count`
 
-### 4. Product CRUD
+### 4. Customer Features
 
-- Added a complete admin product CRUD under `/admin/product`
-- Supported operations:
-  - Create
-  - Read
-  - Update
-  - Delete
+- Added wishlist support
+- Added order ownership with user-linked orders
+- Added product reviews for authenticated purchasers
+- Expanded account page with recent order history and saved products access
 
-### 5. Product Table Enhancements
+### 5. Admin Features
 
-The `products` table was extended with additional admin-related fields:
+- Admin dashboard at `/admin`
+- Product CRUD
+- Category management
+- Brand management
+- Order management
+- Review moderation
 
-- `user_id`
-- `keywords`
-- `detail`
-- `min_stock`
-- `discount`
+### 6. Public API
 
-### 6. Seeders
+Available endpoints:
 
-- Added `RoleSeeder`
-- Added `AdminUserSeeder`
-- Seeded default roles:
-  - `admin`
-  - `user`
-  - `editor`
-  - `moderator`
-- Seeded a default admin account
+- `GET /api/products`
+- `GET /api/products/featured`
+- `GET /api/products/{slug}`
+- `GET /api/categories`
+- `GET /api/brands`
 
-### 7. Admin Interface
+Supported product filters:
 
-- Added admin views for:
-  - dashboard
-  - product list
-  - create product
-  - edit product
-  - show product details
+- `q`
+- `category`
+- `brand`
+- `min_price`
+- `max_price`
+- `per_page`
+
+### 7. Demo Seed Data
+
+- seeded admin user
+- seeded customer user
+- seeded roles
+- seeded brands, categories, products
+- seeded sample order
+- seeded sample approved review
+- seeded sample wishlist item
 
 ### 8. Testing
 
-Added feature tests for:
+The test suite covers:
 
-- guest access restriction to admin panel
-- non-admin access restriction
-- admin access permission
-- admin product creation
-- automatic `user` role assignment after registration
+- admin access control
+- registration and login flows
+- storefront filtering
+- checkout order creation
+- wishlist toggling
+- review submission
+- API catalog endpoints
 
-## Demo Admin Account
+## Demo Accounts
+
+Admin:
 
 - Email: `admin@example.com`
+- Password: `12345678`
+
+Customer:
+
+- Email: `customer@example.com`
 - Password: `12345678`
 
 ## Database Configuration
@@ -132,6 +147,7 @@ Application URLs:
 
 - Storefront: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 - Admin panel: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
+- Wishlist: [http://127.0.0.1:8000/wishlist](http://127.0.0.1:8000/wishlist)
 
 ## Run Tests
 

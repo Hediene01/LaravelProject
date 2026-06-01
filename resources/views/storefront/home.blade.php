@@ -6,10 +6,10 @@
     <section class="hero">
         <div class="hero-copy">
             <span class="eyebrow">Laravel + PHP Ecommerce</span>
-            <h1>Sell a curated tech catalog with a fast storefront, session cart, and checkout flow.</h1>
+            <h1>Sell a curated tech catalog with a fast storefront, wishlist, reviews, API, and admin workflows.</h1>
             <p>
-                Luna Commerce is a production-style starter that pairs Laravel routing, Blade views, seeded products,
-                and database-backed orders in one clean demo.
+                Luna Commerce now combines a public store, customer account tools, richer catalog metadata,
+                and protected admin management in one upgraded Laravel project.
             </p>
 
             <div class="hero-actions">
@@ -24,27 +24,46 @@
                 </div>
                 <div class="stat-card">
                     <strong>{{ $categories->count() }}</strong>
-                    <span>Seeded categories</span>
+                    <span>Catalog categories</span>
                 </div>
                 <div class="stat-card">
-                    <strong>SQLite</strong>
-                    <span>Configured by default</span>
+                    <strong>{{ $brands->count() }}</strong>
+                    <span>Curated brands</span>
                 </div>
             </div>
         </div>
 
         <div class="hero-panel">
             <div class="hero-panel-card">
-                <span class="eyebrow">Ready to extend</span>
-                <h2>What’s included</h2>
+                <span class="eyebrow">Commerce toolkit</span>
+                <h2>What's included</h2>
                 <ul class="feature-list">
-                    <li>Catalog browsing with category and search filters</li>
-                    <li>Product details and related product suggestions</li>
-                    <li>Session-based cart with quantity updates</li>
-                    <li>Checkout that stores orders and line items in the database</li>
+                    <li>Catalog browsing with category, brand, and search filters</li>
+                    <li>Wishlist and customer review flows for signed-in users</li>
+                    <li>Session cart and checkout with stored orders</li>
+                    <li>Admin CRUD, moderation, and public JSON API endpoints</li>
                 </ul>
             </div>
         </div>
+    </section>
+
+    <section class="section-heading">
+        <div>
+            <span class="eyebrow">Trusted makers</span>
+            <h2>Featured brands</h2>
+        </div>
+    </section>
+
+    <section class="brand-grid">
+        @foreach ($brands as $brand)
+            <a class="brand-card" href="{{ route('products.index', ['brand' => $brand->slug]) }}">
+                @if ($brand->logo_url)
+                    <img src="{{ $brand->logo_url }}" alt="{{ $brand->name }}">
+                @endif
+                <strong>{{ $brand->name }}</strong>
+                <span>{{ $brand->products_count }} products</span>
+            </a>
+        @endforeach
     </section>
 
     <section class="section-heading">

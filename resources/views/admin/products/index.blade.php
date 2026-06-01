@@ -18,6 +18,7 @@
                     <tr>
                         <th>Title</th>
                         <th>Category</th>
+                        <th>Brand</th>
                         <th>Author</th>
                         <th>Price</th>
                         <th>Stock</th>
@@ -30,6 +31,7 @@
                         <tr>
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->category?->name }}</td>
+                            <td>{{ $product->brand?->name ?? '-' }}</td>
                             <td>{{ $product->user?->name ?? 'Seeder' }}</td>
                             <td>${{ number_format((float) $product->price, 2) }}</td>
                             <td>{{ $product->inventory }}</td>
@@ -46,7 +48,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7">No products found.</td>
+                            <td colspan="8">No products found.</td>
                         </tr>
                     @endforelse
                 </tbody>

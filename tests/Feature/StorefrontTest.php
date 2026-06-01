@@ -52,6 +52,20 @@ class StorefrontTest extends TestCase
             ->assertDontSee($otherProduct->name);
     }
 
+    public function test_products_page_can_filter_by_brand(): void
+    {
+        $this->seed();
+
+        $product = Product::query()->where('sku', 'AUD-1001')->firstOrFail();
+        $brand = $product->brand;
+        $otherProduct = Product::query()->where('brand_id', '!=', $brand->id)->firstOrFail();
+
+        $this->get(route('products.index', ['brand' => $brand->slug]))
+            ->assertOk()
+            ->assertSee($product->name)
+            ->assertDontSee($otherProduct->name);
+    }
+
     public function test_checkout_creates_order_and_line_items(): void
     {
         $this->seed();
@@ -80,7 +94,7 @@ class StorefrontTest extends TestCase
             'notes' => 'Leave at reception.',
         ]);
 
-        $order = Order::query()->first();
+        $order = Order::query()->latest('id')->first();
 
         $response->assertRedirect(route('checkout.success', $order));
 

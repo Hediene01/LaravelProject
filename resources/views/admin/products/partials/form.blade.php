@@ -16,6 +16,18 @@
     </label>
 
     <label>
+        Brand
+        <select name="brand_id">
+            <option value="">No brand</option>
+            @foreach ($brands as $brand)
+                <option value="{{ $brand->id }}" @selected(old('brand_id', $product->brand_id) == $brand->id)>
+                    {{ $brand->name }}
+                </option>
+            @endforeach
+        </select>
+    </label>
+
+    <label>
         SKU
         <input type="text" name="sku" value="{{ old('sku', $product->sku) }}" required>
     </label>
@@ -72,6 +84,21 @@
 </label>
 
 <label>
+    Meta title
+    <input type="text" name="meta_title" value="{{ old('meta_title', $product->meta_title) }}" placeholder="SEO title for search and shares">
+</label>
+
+<label>
+    Meta description
+    <textarea name="meta_description" rows="3" placeholder="SEO description">{{ old('meta_description', $product->meta_description) }}</textarea>
+</label>
+
+<label>
+    Gallery image URLs
+    <textarea name="gallery_input" rows="4" placeholder="One image URL per line">{{ old('gallery_input', is_array($product->gallery) ? implode("\n", $product->gallery) : '') }}</textarea>
+</label>
+
+<label>
     Upload image
     <input type="file" name="image" accept="image/*">
 </label>
@@ -79,6 +106,14 @@
 @if ($isEditing && $product->image_url)
     <div class="admin-image-preview">
         <img src="{{ $product->image_url }}" alt="{{ $product->name }}">
+    </div>
+@endif
+
+@if ($isEditing && is_array($product->gallery) && count($product->gallery) > 0)
+    <div class="gallery-grid">
+        @foreach ($product->gallery as $galleryImage)
+            <img src="{{ $galleryImage }}" alt="{{ $product->name }}">
+        @endforeach
     </div>
 @endif
 

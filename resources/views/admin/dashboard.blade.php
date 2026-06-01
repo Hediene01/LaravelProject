@@ -7,7 +7,7 @@
         <div>
             <span class="eyebrow">Protected admin area</span>
             <h1>Store dashboard</h1>
-            <p>Accessible only to users with the <strong>admin</strong> role, as requested in the course PDFs.</p>
+            <p>Manage the storefront, review customer activity, and moderate catalog content from one place.</p>
         </div>
     </section>
 
@@ -21,12 +21,20 @@
             <strong>{{ $categoryCount }}</strong>
         </article>
         <article class="admin-stat-card">
+            <span>Brands</span>
+            <strong>{{ $brandCount }}</strong>
+        </article>
+        <article class="admin-stat-card">
             <span>Orders</span>
             <strong>{{ $orderCount }}</strong>
         </article>
         <article class="admin-stat-card">
             <span>Users</span>
             <strong>{{ $userCount }}</strong>
+        </article>
+        <article class="admin-stat-card">
+            <span>Pending reviews</span>
+            <strong>{{ $pendingReviewCount }}</strong>
         </article>
     </section>
 
@@ -51,7 +59,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($latestProducts as $product)
+                    @forelse ($latestProducts as $product)
                         <tr>
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->category?->name }}</td>
@@ -59,7 +67,48 @@
                             <td>{{ $product->is_active ? 'Active' : 'Hidden' }}</td>
                             <td>${{ number_format((float) $product->price, 2) }}</td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="5">No products available.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="admin-panel-card">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Recent commerce activity</span>
+                <h2>Latest orders</h2>
+            </div>
+            <a class="button button-light" href="{{ route('admin.orders.index') }}">Open orders</a>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($latestOrders as $order)
+                        <tr>
+                            <td>{{ $order->order_number }}</td>
+                            <td>{{ $order->customer_name }}</td>
+                            <td>{{ ucfirst($order->status) }}</td>
+                            <td>${{ number_format((float) $order->total_amount, 2) }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4">No orders yet.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

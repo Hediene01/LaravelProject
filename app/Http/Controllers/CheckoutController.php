@@ -41,9 +41,10 @@ class CheckoutController extends Controller
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $order = DB::transaction(function () use ($validated) {
+        $order = DB::transaction(function () use ($validated, $request) {
             $order = Order::create([
                 ...$validated,
+                'user_id' => $request->user()?->id,
                 'order_number' => 'ORD-'.str_pad((string) random_int(1, 999999), 6, '0', STR_PAD_LEFT),
                 'subtotal' => Cart::subtotal(),
                 'shipping_amount' => Cart::shippingAmount(),

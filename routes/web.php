@@ -1,14 +1,20 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Admin\BrandController as AdminBrandController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SavedCardController;
 use App\Http\Controllers\StorefrontController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [StorefrontController::class, 'home'])->name('home');
@@ -34,6 +40,9 @@ Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])-
 Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'show'])->name('account.show');
     Route::patch('/account', [AccountController::class, 'update'])->name('account.update');
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::post('/account/cards', [SavedCardController::class, 'store'])->name('account.cards.store');
     Route::patch('/account/cards/{savedCard}', [SavedCardController::class, 'update'])->name('account.cards.update');
     Route::delete('/account/cards/{savedCard}', [SavedCardController::class, 'destroy'])->name('account.cards.destroy');
@@ -57,5 +66,42 @@ Route::prefix('admin')
                 Route::get('/edit/{product}', 'edit')->name('edit');
                 Route::put('/update/{product}', 'update')->name('update');
                 Route::delete('/delete/{product}', 'destroy')->name('destroy');
+            });
+
+        Route::prefix('categories')
+            ->name('categories.')
+            ->controller(AdminCategoryController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/store', 'store')->name('store');
+                Route::put('/update/{category}', 'update')->name('update');
+                Route::delete('/delete/{category}', 'destroy')->name('destroy');
+            });
+
+        Route::prefix('brands')
+            ->name('brands.')
+            ->controller(AdminBrandController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/store', 'store')->name('store');
+                Route::put('/update/{brand}', 'update')->name('update');
+                Route::delete('/delete/{brand}', 'destroy')->name('destroy');
+            });
+
+        Route::prefix('orders')
+            ->name('orders.')
+            ->controller(AdminOrderController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/show/{order}', 'show')->name('show');
+                Route::patch('/update/{order}', 'update')->name('update');
+            });
+
+        Route::prefix('reviews')
+            ->name('reviews.')
+            ->controller(AdminReviewController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::patch('/update/{review}', 'update')->name('update');
             });
     });

@@ -20,6 +20,10 @@
             <nav class="admin-nav">
                 <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                 <a href="{{ route('admin.product.index') }}">Products</a>
+                <a href="{{ route('admin.categories.index') }}">Categories</a>
+                <a href="{{ route('admin.brands.index') }}">Brands</a>
+                <a href="{{ route('admin.orders.index') }}">Orders</a>
+                <a href="{{ route('admin.reviews.index') }}">Reviews</a>
                 <a href="{{ route('home') }}">Back to storefront</a>
             </nav>
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Brand;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
@@ -18,7 +19,7 @@ class ProductController extends Controller
     {
         return view('admin.products.index', [
             'products' => Product::query()
-                ->with(['category', 'user'])
+                ->with(['brand', 'category', 'user'])
                 ->latest()
                 ->paginate(12),
         ]);
@@ -28,6 +29,7 @@ class ProductController extends Controller
     {
         return view('admin.products.create', [
             'product' => new Product(),
+            'brands' => Brand::query()->orderBy('name')->get(),
             'categories' => Category::query()->orderBy('name')->get(),
         ]);
     }
@@ -36,6 +38,8 @@ class ProductController extends Controller
     {
         $validated = $this->validatedData($request);
         $payload = collect($validated)->except('image')->all();
+        $payload['gallery'] = $this->galleryFromInput($validated['gallery_input'] ?? null);
+        unset($payload['gallery_input']);
 
         Product::query()->create([
             ...$payload,
@@ -54,7 +58,7 @@ class ProductController extends Controller
     public function show(Product $product): View
     {
         return view('admin.products.show', [
-            'product' => $product->load(['category', 'user']),
+            'product' => $product->load(['brand', 'category', 'user']),
         ]);
     }
 
@@ -62,6 +66,7 @@ class ProductController extends Controller
     {
         return view('admin.products.edit', [
             'product' => $product,
+            'brands' => Brand::query()->orderBy('name')->get(),
             'categories' => Category::query()->orderBy('name')->get(),
         ]);
     }
@@ -70,6 +75,8 @@ class ProductController extends Controller
     {
         $validated = $this->validatedData($request, $product);
         $payload = collect($validated)->except('image')->all();
+        $payload['gallery'] = $this->galleryFromInput($validated['gallery_input'] ?? null);
+        unset($payload['gallery_input']);
         $uploadedImage = $this->storeImage($request);
 
         if ($uploadedImage !== null) {
@@ -104,10 +111,14 @@ class ProductController extends Controller
     {
         return $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
+            'brand_id' => ['nullable', 'exists:brands,id'],
             'name' => ['required', 'string', 'max:255'],
             'keywords' => ['nullable', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:500'],
             'detail' => ['nullable', 'string'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:255'],
+            'gallery_input' => ['nullable', 'string', 'max:5000'],
             'sku' => [
                 'required',
                 'string',
@@ -167,5 +178,14 @@ class ProductController extends Controller
         }
 
         File::delete(public_path(ltrim($path, '/')));
+    }
+
+    private function galleryFromInput(?string $galleryInput): array
+    {
+        return collect(preg_split('/\r\n|\r|\n/', (string) $galleryInput) ?: [])
+            ->map(fn (string $line) => trim($line))
+            ->filter()
+            ->values()
+            ->all();
     }
 }

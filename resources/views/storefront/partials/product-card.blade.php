@@ -6,6 +6,9 @@
     <div class="product-body">
         <div class="product-meta">
             <span class="chip">{{ $product->category->name }}</span>
+            @if ($product->brand)
+                <span class="chip">{{ $product->brand->name }}</span>
+            @endif
             @if ($product->is_featured)
                 <span class="chip chip-accent">Featured</span>
             @endif
@@ -13,6 +16,13 @@
 
         <h3><a href="{{ route('products.show', $product) }}">{{ $product->name }}</a></h3>
         <p>{{ $product->description }}</p>
+
+        @if (($product->reviews_count ?? 0) > 0)
+            <div class="rating-row">
+                <strong>{{ number_format((float) $product->average_rating, 1) }}/5</strong>
+                <span>{{ $product->reviews_count }} reviews</span>
+            </div>
+        @endif
 
         <div class="price-row">
             <strong>${{ number_format((float) $product->price, 2) }}</strong>

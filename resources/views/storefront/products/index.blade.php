@@ -7,7 +7,7 @@
         <div>
             <span class="eyebrow">Catalog</span>
             <h1>Shop products</h1>
-            <p>Filter by category or search by product name, SKU, and description.</p>
+            <p>Filter by category, brand, and search terms across the expanded storefront catalog.</p>
         </div>
     </section>
 
@@ -23,6 +23,15 @@
             @endforeach
         </select>
 
+        <select name="brand">
+            <option value="">All brands</option>
+            @foreach ($brands as $brand)
+                <option value="{{ $brand->slug }}" @selected($selectedBrand === $brand->slug)>
+                    {{ $brand->name }}
+                </option>
+            @endforeach
+        </select>
+
         <button type="submit" class="button button-dark">Apply filters</button>
     </form>
 
@@ -32,7 +41,7 @@
         @empty
             <div class="empty-state">
                 <h2>No products matched your filters</h2>
-                <p>Try clearing the search or switching to another category.</p>
+                <p>Try clearing the search or switching to another category or brand.</p>
             </div>
         @endforelse
     </section>

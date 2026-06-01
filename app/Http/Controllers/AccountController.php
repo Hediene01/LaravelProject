@@ -11,7 +11,12 @@ class AccountController extends Controller
     public function show(Request $request): View
     {
         return view('account.show', [
-            'user' => $request->user()->load('savedCards'),
+            'user' => $request->user()->load([
+                'savedCards',
+                'orders.orderItems.product',
+                'wishlistItems.product',
+                'reviews.product',
+            ]),
         ]);
     }
 

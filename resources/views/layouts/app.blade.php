@@ -24,6 +24,7 @@
                     <a href="{{ route('products.index') }}">Shop</a>
                     <a href="{{ route('checkout.create') }}">Checkout</a>
                     @auth
+                        <a href="{{ route('wishlist.index') }}">Wishlist</a>
                         <a href="{{ route('account.show') }}">My account</a>
                         @if (auth()->user()->hasRole('admin'))
                             <a href="{{ route('admin.dashboard') }}">Admin</a>
@@ -48,6 +49,13 @@
                         <strong>{{ $cartCount }}</strong>
                         <small>${{ number_format($cartSubtotal, 2) }}</small>
                     </a>
+
+                    @auth
+                        <a class="cart-pill wishlist-pill" href="{{ route('wishlist.index') }}">
+                            <span>Wishlist</span>
+                            <strong>{{ $wishlistCount }}</strong>
+                        </a>
+                    @endauth
                 </div>
             </div>
         </header>
