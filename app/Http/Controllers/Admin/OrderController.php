@@ -4,38 +4,39 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request)
     {
-        return view('admin.orders.index', [
-            'orders' => Order::query()
-                ->with('user')
-                ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')->toString()))
-                ->latest()
-                ->paginate(15)
-                ->withQueryString(),
-        ]);
+        $status = $request->status;
+        $orders = Order::with('user')
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        $statuses = Order::STATUSES;
+
+        return view('admin.orders.index', compact('orders', 'statuses', 'status'));
     }
 
-    public function show(Order $order): View
+    public function show(Order $order)
     {
-        return view('admin.orders.show', [
-            'order' => $order->load(['user', 'orderItems.product']),
-        ]);
+        $order->load(['items.product', 'user']);
+        $statuses = Order::STATUSES;
+
+        return view('admin.orders.show', compact('order', 'statuses'));
     }
 
-    public function update(Request $request, Order $order): RedirectResponse
+    public function updateStatus(Request $request, Order $order)
     {
-        $validated = $request->validate([
-            'status' => ['required', 'in:pending,processing,shipped,delivered,cancelled'],
+        $request->validate([
+            'status' => 'required|in:'.implode(',', Order::STATUSES),
         ]);
 
-        $order->update($validated);
+        $order->update(['status' => $request->status]);
 
         return back()->with('success', 'Order status updated successfully.');
     }

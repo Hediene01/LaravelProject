@@ -34,11 +34,14 @@
             @endif
         </div>
 
-        <form action="{{ route('cart.store') }}" method="POST" class="inline-cart-form">
+        @auth
+        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="inline-cart-form">
             @csrf
-            <input type="hidden" name="product_id" value="{{ $product->id }}">
             <input type="hidden" name="quantity" value="1">
             <button type="submit" class="button button-dark">Add to cart</button>
         </form>
+        @else
+        <a class="button button-dark" href="{{ route('login') }}">Login to buy</a>
+        @endauth
     </div>
 </article>

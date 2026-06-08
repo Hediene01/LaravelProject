@@ -49,17 +49,18 @@
                 <span>{{ $product->inventory }} in stock</span>
             </div>
 
-            <form action="{{ route('cart.store') }}" method="POST" class="detail-form">
+            @auth
+            <form action="{{ route('cart.add', $product->id) }}" method="POST" class="detail-form">
                 @csrf
-                <input type="hidden" name="product_id" value="{{ $product->id }}">
-
                 <label>
                     Quantity
                     <input type="number" min="1" max="{{ $product->inventory }}" name="quantity" value="1">
                 </label>
-
                 <button type="submit" class="button button-dark">Add to cart</button>
             </form>
+            @else
+            <a class="button button-dark" href="{{ route('login') }}">Login to add to cart</a>
+            @endauth
 
             @auth
                 <form action="{{ route('wishlist.toggle', $product) }}" method="POST" class="inline-cart-form">

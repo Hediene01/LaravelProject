@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ReviewController;
@@ -28,16 +28,16 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
 });
 
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
-Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
+// Cart routes (require auth for DB-based cart)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/update/{cart}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{cart}', [CartController::class, 'remove'])->name('cart.remove');
 
-Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+    Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('place.order');
 
-Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'show'])->name('account.show');
     Route::patch('/account', [AccountController::class, 'update'])->name('account.update');
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
@@ -94,7 +94,7 @@ Route::prefix('admin')
             ->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/show/{order}', 'show')->name('show');
-                Route::patch('/update/{order}', 'update')->name('update');
+                Route::post('/status/{order}', 'updateStatus')->name('updateStatus');
             });
 
         Route::prefix('reviews')

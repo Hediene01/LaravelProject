@@ -2,53 +2,85 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Product;
-use App\Support\Cart;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    public function index(): View
+    public function index()
     {
-        return view('storefront.cart.index', [
-            'items' => Cart::content(),
-            'subtotal' => Cart::subtotal(),
-            'shippingAmount' => Cart::shippingAmount(),
-            'total' => Cart::total(),
-        ]);
+        $cartItems = Cart::with('product')
+            ->where('user_id', Auth::id())
+            ->get();
+
+        return view('storefront.cart.index', compact('cartItems'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function add(Request $request, $productId)
     {
-        $validated = $request->validate([
-            'product_id' => ['required', 'integer', 'exists:products,id'],
-            'quantity' => ['required', 'integer', 'min:1'],
+        $request->validate([
+            'quantity' => 'nullable|integer|min:1',
         ]);
 
-        $product = Product::query()->where('is_active', true)->findOrFail($validated['product_id']);
+        $product = Product::findOrFail($productId);
+        $quantity = $request->quantity ?? 1;
 
-        Cart::add($product, $validated['quantity']);
+        if ($product->inventory < $quantity) {
+            return back()->with('error', 'Not enough stock available.');
+        }
 
-        return back()->with('success', $product->name.' added to cart.');
+        $cart = Cart::where('user_id', Auth::id())
+            ->where('product_id', $product->id)
+            ->first();
+
+        if ($cart) {
+            $newQuantity = $cart->quantity + $quantity;
+            if ($product->inventory < $newQuantity) {
+                return back()->with('error', 'Not enough stock available.');
+            }
+            $cart->update([
+                'quantity' => $newQuantity,
+                'price' => $product->price,
+            ]);
+        } else {
+            Cart::create([
+                'user_id' => Auth::id(),
+                'product_id' => $product->id,
+                'quantity' => $quantity,
+                'price' => $product->price,
+            ]);
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Product added to cart.');
     }
 
-    public function update(Request $request, Product $product): RedirectResponse
+    public function update(Request $request, $cartId)
     {
-        $validated = $request->validate([
-            'quantity' => ['required', 'integer', 'min:0'],
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
         ]);
 
-        Cart::update($product, $validated['quantity']);
+        $cart = Cart::where('user_id', Auth::id())
+            ->findOrFail($cartId);
+
+        if ($cart->product->inventory < $request->quantity) {
+            return back()->with('error', 'Not enough stock available.');
+        }
+
+        $cart->update(['quantity' => $request->quantity]);
 
         return back()->with('success', 'Cart updated.');
     }
 
-    public function destroy(Product $product): RedirectResponse
+    public function remove($cartId)
     {
-        Cart::remove($product);
+        $cart = Cart::where('user_id', Auth::id())
+            ->findOrFail($cartId);
 
-        return back()->with('success', 'Item removed from cart.');
+        $cart->delete();
+
+        return back()->with('success', 'Product removed from cart.');
     }
 }

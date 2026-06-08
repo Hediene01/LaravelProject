@@ -11,6 +11,14 @@ class Order extends Model
 {
     use HasFactory;
 
+    public const STATUSES = [
+        'New',
+        'Accepted',
+        'Cancelled',
+        'Onshipping',
+        'Completed',
+    ];
+
     protected $fillable = [
         'user_id',
         'order_number',
@@ -19,11 +27,14 @@ class Order extends Model
         'customer_phone',
         'shipping_address',
         'city',
+        'country',
         'postal_code',
         'notes',
         'subtotal',
         'shipping_amount',
         'total_amount',
+        'shipping_method',
+        'payment_method',
         'status',
     ];
 
@@ -37,6 +48,11 @@ class Order extends Model
     }
 
     public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
